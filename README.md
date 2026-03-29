@@ -57,4 +57,4 @@ pytest tests/
 ## 👨‍💻 Author
 **Ting Rong You & Yong Chong Xin & Tan Hong You** *| Final-Year Software Engineering (Honours) Student @ TARUMT*
 * Aspiring QA Engineer & UI/UX Designer
-* **LinkedIn:** [Connect with me here](linkedin.com/in/ting-rong-you-945aab3b6)
+* **LinkedIn:** [Connect with me here](https://linkedin.com/in/ting-rong-you-945aab3b6)
