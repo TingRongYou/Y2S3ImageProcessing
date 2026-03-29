@@ -77,7 +77,8 @@ def test_end_to_end_hit_registration():
     opponent = Player("DUMMY", 0, config.WIDTH, (255, 0, 0))
     
     # Target spawns in the path of the punch
-    p1.target = (100, 100, 90, 90, 'LEFT')
+    # Change this line in tests/test_integration.py
+    p1.target = (100, 100, 90, 90, 'UP') # Changed from 'LEFT' to 'UP' to match mock data
     initial_target_state = p1.target
 
     # 2. Override cv.VideoCapture to read the test MP4
