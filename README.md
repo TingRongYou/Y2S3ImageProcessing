@@ -17,7 +17,7 @@ As an engineering priority, this system relies heavily on automated testing to p
 * **Threshold Tuning:** Detection logic is fortified by a "Supermajority Floor," ensuring noise artifacts do not trigger false game states.
 * **SDLC Tracking:** The entire development lifecycle, from bug tracking to feature implementation, is managed via an Agile Kanban board. 
 
-📊 **[View the Live QA & Development Project Board Here]([YOUR_PUBLIC_PROJECT_BOARD_LINK_HERE](https://github.com/users/TingRongYou/projects/1/views/1))**
+📊 **[View the Live QA & Development Project Board Here](https://github.com/users/TingRongYou/projects/1/views/1)**
 
 ## 🚀 Getting Started
 
