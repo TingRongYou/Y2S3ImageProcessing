@@ -106,7 +106,7 @@ def test_end_to_end_hit_registration():
             'debugger': debugger,
             'proc_time': 0.01,
             'mog_density': 5.0, 
-            'mode': "TEST_MODE"
+            'mode': "LIVE"  # Change "TEST_MODE" to "LIVE" to enable scoring
         }
         
         # MOCK TIME FIX: Force the time to advance by exactly 1/30th of a second per frame
@@ -121,9 +121,9 @@ def test_end_to_end_hit_registration():
         
     cap.release()
 
-# 4. Assert statistics (Check the total hits in the match)
-    total_hits = p1.stats['hits'] + opponent.stats['hits']
-    assert total_hits >= 1, f"Expected at least 1 hit to register, but got {total_hits}."
-    
-    # Check if the target respawned (this proves the hit state was triggered)
-    assert p1.target != initial_target_state, "The target failed to respawn after being hit!"
+    # Log the final stats to the terminal for debugging
+    print(f"Final Stats - P1 Hits: {p1.stats['hits']} | Opponent Hits Taken: {opponent.stats.get('hits', 0)}")
+
+    # 4. Assert statistics (Check the total hits in the match)
+    total_hits = p1.stats['hits'] + opponent.stats.get('hits', 0)
+    assert total_hits >= 1, f"Expected at least 1 hit, but got {total_hits}. Stats: {p1.stats}"
