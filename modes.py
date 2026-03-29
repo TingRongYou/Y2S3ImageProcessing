@@ -242,6 +242,7 @@ class ScannerBoss(BaseBoss):
         super().__init__("THERMAL EYE", (255, 255, 0)) # Cyan
         self.has_damaged = False
         self.first_run = True
+        self.scan_start_time = 0 # Tracks when the freeze actually started
         
     def update(self, mask, player, current_time, sound, floating_texts):
         if self.first_run:
@@ -251,7 +252,11 @@ class ScannerBoss(BaseBoss):
         if self.state == "IDLE":
             if current_time > self.action_timer:
                 self.state = "SCAN"
-                self.action_timer = current_time + config.BOSS_IDLE_TIME
+
+                scan_duration = random.uniform(1.0, 10.0) # Random freez duration between 1 and 10 seconds
+                self.action_timer = current_time + scan_duration
+
+                self.scan_start_time = current_time
                 self.has_damaged = False
                 try: sound.play_sfx("button")
                 except: pass
@@ -260,20 +265,23 @@ class ScannerBoss(BaseBoss):
                 self.state = "IDLE"
                 self.action_timer = current_time + config.BOSS_IDLE_TIME + 1.0
             elif not self.has_damaged:
-                motion = cv.countNonZero(mask)
-                if motion > config.MISS_THRESHOLD:
+                if current_time > self.scan_start_time + 0.6:
+                    motion = cv.countNonZero(mask)
+                    freeze_threshold = config.MISS_THRESHOLD * 1.2 # Increase freeze threshold
+
+                if motion > freeze_threshold:
                     player.health -= 20
                     self.has_damaged = True
                     try: sound.play_sfx("hurt_p1")
                     except: pass
                     floating_texts.append(DamageText("HIGH!", config.MID_X, 200, (0, 0, 255)))
-                elif motion > config.MISS_THRESHOLD * 1.5:
+                elif motion > freeze_threshold * 0.75:
                     player.health -= 10
                     self.has_damaged = True
                     try: sound.play_sfx("hurt_p1")
                     except: pass
                     floating_texts.append(DamageText("WARNING!", config.MID_X, 200, (0, 255, 255)))
-                elif motion > config.MISS_THRESHOLD * 0.5:
+                elif motion > freeze_threshold * 0.4:
                     floating_texts.append(DamageText("STAY STILL!", config.MID_X, 200, (255, 0, 0)))
 
     def draw_effects(self, heatmap, current_time):
