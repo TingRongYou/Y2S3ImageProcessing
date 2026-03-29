@@ -122,5 +122,5 @@ def test_end_to_end_hit_registration():
     cap.release()
 
     # 4. Assert Player 1 hit statistics
-    assert p1.stats['hits'] == 1, f"Expected exactly 1 hit to register, but got {p1.stats['hits']}."
+    assert opponent.stats['hits'] == 1, f"Expected exactly 1 hit on the opponent, but got {opponent.stats['hits']}."
     assert p1.target != initial_target_state, "The target failed to respawn after being hit!"
