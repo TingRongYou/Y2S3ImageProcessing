@@ -29,7 +29,7 @@ As an engineering priority, this system relies heavily on automated testing to p
 ### Installation
 1. Clone the repository to your local machine:
    ```bash
-   git clone [https://github.com/YourUsername/Thermal_Punch.git](https://github.com/TingRongYou/Y2S3ImageProcessing.git)
+   git clone https://github.com/TingRongYou/Y2S3ImageProcessing.git
    ```
 2. Navigate to the project directory:
    ```bash
