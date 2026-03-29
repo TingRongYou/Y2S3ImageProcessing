@@ -239,40 +239,54 @@ class LaserBoss(BaseBoss):
             
 class ScannerBoss(BaseBoss):
     def __init__(self):
-        super().__init__("THERMAL EYE", (255, 0, 0)) # Blue
+        super().__init__("THERMAL EYE", (255, 255, 0)) # Cyan
         self.has_damaged = False
+        self.first_run = True
         
     def update(self, mask, player, current_time, sound, floating_texts):
+        if self.first_run:
+            self.action_timer = current_time + config.BOSS_IDLE_TIME
+            self.first_run = False
+
         if self.state == "IDLE":
             if current_time > self.action_timer:
                 self.state = "SCAN"
                 self.action_timer = current_time + config.BOSS_IDLE_TIME
                 self.has_damaged = False
+                try: sound.play_sfx("button")
+                except: pass
         elif self.state == "SCAN":
             if current_time > self.action_timer:
                 self.state = "IDLE"
-                self.action_timer = current_time + config.SCANNER_SCAN_TIME
+                self.action_timer = current_time + config.BOSS_IDLE_TIME + 1.0
             elif not self.has_damaged:
                 motion = cv.countNonZero(mask)
                 if motion > config.MISS_THRESHOLD:
                     player.health -= 20
                     self.has_damaged = True
-                    sound.play_sfx("hurt_p1")
+                    try: sound.play_sfx("hurt_p1")
+                    except: pass
                     floating_texts.append(DamageText("HIGH!", config.MID_X, 200, (0, 0, 255)))
                 elif motion > config.MISS_THRESHOLD * 1.5:
                     player.health -= 10
                     self.has_damaged = True
-                    sound.play_sfx("hurt_p1")
+                    try: sound.play_sfx("hurt_p1")
+                    except: pass
                     floating_texts.append(DamageText("WARNING!", config.MID_X, 200, (0, 255, 255)))
                 elif motion > config.MISS_THRESHOLD * 0.5:
                     floating_texts.append(DamageText("STAY STILL!", config.MID_X, 200, (255, 0, 0)))
 
     def draw_effects(self, heatmap, current_time):
-        if self.state == "SCAN":
+        if self.state == "IDLE" and not self.first_run:
+            time_left = max(0.0, self.action_timer - current_time)
+            cv.putText(heatmap, f"SCAN IN: {time_left:.1f}s", (config.MID_X - 120, 100), 
+                       cv.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
+        elif self.state == "SCAN":
             overlay = heatmap.copy()
-            cv.rectangle(overlay, (0, 0), (config.WIDTH, config.HEIGHT), (255, 0, 0), -1)
+            cv.rectangle(overlay, (0,0), (config.WIDTH, config.HEIGHT), (255, 255, 0), -1)
             cv.addWeighted(overlay, 0.3, heatmap, 0.7, 0, heatmap)
-            cv.putText(heatmap, "FREEZE!", (config.MID_X - 100, 100), cv.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 4)
+            cv.putText(heatmap, "FREEZE!", (config.MID_X - 100, 100), 
+                       cv.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 4)
 
 class DeflectorBoss(BaseBoss):
     def __init__(self):
