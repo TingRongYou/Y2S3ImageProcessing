@@ -23,7 +23,7 @@ jobs:
         
     - name: Install System Dependencies for OpenCV
       # OpenCV requires these specific Linux graphics libraries to run headlessly
-      run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-glx
+      run: sudo apt-get update && sudo apt-get install -y libgl1 libglib2.0-0
 
     - name: Install Python Dependencies
       run: |
