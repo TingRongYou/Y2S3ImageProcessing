@@ -269,20 +269,20 @@ class ScannerBoss(BaseBoss):
                     motion = cv.countNonZero(mask)
                     freeze_threshold = config.MISS_THRESHOLD * 1.2 # Increase freeze threshold
 
-                if motion > freeze_threshold:
-                    player.health -= 20
-                    self.has_damaged = True
-                    try: sound.play_sfx("hurt_p1")
-                    except: pass
-                    floating_texts.append(DamageText("HIGH!", config.MID_X, 200, (0, 0, 255)))
-                elif motion > freeze_threshold * 0.75:
-                    player.health -= 10
-                    self.has_damaged = True
-                    try: sound.play_sfx("hurt_p1")
-                    except: pass
-                    floating_texts.append(DamageText("WARNING!", config.MID_X, 200, (0, 255, 255)))
-                elif motion > freeze_threshold * 0.4:
-                    floating_texts.append(DamageText("STAY STILL!", config.MID_X, 200, (255, 0, 0)))
+                    if motion > freeze_threshold:
+                        player.health -= 20
+                        self.has_damaged = True
+                        try: sound.play_sfx("hurt_p1")
+                        except: pass
+                        floating_texts.append(DamageText("HIGH!", config.MID_X, 200, (0, 0, 255)))
+                    elif motion > freeze_threshold * 0.75:
+                        player.health -= 10
+                        self.has_damaged = True
+                        try: sound.play_sfx("hurt_p1")
+                        except: pass
+                        floating_texts.append(DamageText("WARNING!", config.MID_X, 200, (0, 255, 255)))
+                    elif motion > freeze_threshold * 0.4:
+                        floating_texts.append(DamageText("STAY STILL!", config.MID_X, 200, (255, 0, 0)))
 
     def draw_effects(self, heatmap, current_time):
         if self.state == "IDLE" and not self.first_run:
