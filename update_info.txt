@@ -1,0 +1,11 @@
+11/2/2026
+    Added title screen (Space to start game and q to quite)
+    Added Fullscreen ability (Press 'F')
+    Added Stamina (Too much excessive move will cause stamina drain, which the player will freeze)
+    Added hit type (Miss, Hit, Crit)
+
+16/2/2026
+    Added sound effect and bgm
+    Added damage indicator
+    Improve main menu and game over menu
+    Fixed Overheat bug
