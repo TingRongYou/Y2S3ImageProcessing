@@ -1,0 +1,10 @@
+# Python Cache
+__pycache__/
+*.pyc
+
+# Test Videos and Heavy Media
+*.mp4
+*.avi
+
+# Logs (Optional: prevents your local test runs from constantly needing to be committed)
+logs/*.csv
