@@ -1,3 +1,4 @@
+# QA VALIDATION RUN: 2026-03-29 18:48
 import pytest
 import cv2 as cv
 import numpy as np
@@ -83,7 +84,6 @@ def test_end_to_end_hit_registration():
     cap.release()
 
     # THE ULTIMATE ASSERTION: Check if the target respawned
-    # This is the most reliable proof that check_attack() worked.
     current_direction = p1.target[4]
     print(f"Final Report - Initial Req: {initial_direction} | New Req: {current_direction}")
     
