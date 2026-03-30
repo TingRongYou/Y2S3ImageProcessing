@@ -35,6 +35,7 @@ class MultiplayerMode:
         self.p1.update_stamina(mask)
         self.p2.update_stamina(mask)
 
+        # Calculate player total motion based on their side
         p1_total_motion = cv.countNonZero(mask[:, 0:config.MID_X])
         p2_total_motion = cv.countNonZero(mask[:, config.MID_X:config.WIDTH])
 
@@ -182,6 +183,7 @@ class LaserBoss(BaseBoss):
                 # Heat targeting
                 zone_w = config.WIDTH // 3
                 zone_motions = []
+                # Divide screen into 3 zones, calculate motion density of each
                 for i in range(3):
                     x_start = i * zone_w
                     zone_mask = mask[:, x_start:x_start + zone_w]
@@ -398,6 +400,7 @@ class SingleplayerMode:
         elif total_motion > config.ADAPTIVE_MED_MOTION: speed_factor = config.ADAPTIVE_SPEED_MED
         else: speed_factor = config.ADAPTIVE_SPEED_LOW
 
+        # Shrink timestampe user are schedule to attack
         if hasattr(self.boss, 'action_timer'):
             self.boss.action_timer -= (0.01 * speed_factor)
 

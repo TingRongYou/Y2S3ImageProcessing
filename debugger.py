@@ -63,6 +63,7 @@ class PerformanceDebugger:
 
         # Loop through and draw each one with a nice green border and label
         for y, pip, title in zip(y_positions, pips, titles):
+            # Overwrite pixel blocks to create tiny debug screen
             main_frame[y:y+pip_h, x_offset:x_offset+pip_w] = pip
             cv.rectangle(main_frame, (x_offset, y), (x_offset+pip_w, y+pip_h), (0, 255, 0), 2)
             
@@ -75,8 +76,8 @@ class PerformanceDebugger:
         if not config.DEBUG_MODE: return
 
         # 1. Calculate numerical intensity (Before color mapping)
-        mean_val = cv.mean(visual_motion)[0]
-        _, max_val, _, _ = cv.minMaxLoc(visual_motion)
+        mean_val = cv.mean(visual_motion)[0] # Calculate average pixel intensity of entire matrix
+        _, max_val, _, _ = cv.minMaxLoc(visual_motion) # Find min and max pixel and their positions
 
         # --- UI TWEAK: Master Y variable to slide the whole block ---
         base_y = 150

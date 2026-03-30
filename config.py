@@ -64,7 +64,7 @@ BUTTON_HEIGHT = 60
 BUTTON_COLOR = (50, 50, 50)
 BUTTON_HOVER_COLOR = (150, 150, 150) # Dark Grey
 BUTTON_TEXT_COLOR = (255, 255, 255) # White
-MENU_HIT_THRESHOLD = 1000 # How hard to hit the button 
+MENU_HIT_THRESHOLD = 2000 # How hard to hit the button 
 GAMEOVER_COOLDOWN = 5.0   # Seconds to wait before button active
 
 #== ADAPTIVE DIFFICULTY SETTINGS ==#

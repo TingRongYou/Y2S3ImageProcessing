@@ -17,7 +17,7 @@ class SoundManager:
         self.load_sfx("crit_p2", "assets/sfx/crit_p2.mp3") # Crit Impact on P2
         self.load_sfx("hurt_p1", "assets/sfx/hurt_p1.mp3") # P1 Grunt
         self.load_sfx("hurt_p2", "assets/sfx/hurt_p2.mp3") # P2 Grunt
-        self.load_sfx("button",  "assets/sfx/button.mp3")  # Reusing hit sound for button if you don't have a specific one, or add button.mp3 if you have it
+        self.load_sfx("button",  "assets/sfx/button.mp3")  # Menu button hit
         self.load_sfx("screenshot", "assets/sfx/screenshot.mp3") # Screenshot sound
         
         # === 2. Define Music Tracks ===
