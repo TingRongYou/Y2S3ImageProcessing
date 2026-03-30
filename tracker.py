@@ -12,10 +12,10 @@ class OpticalFlowTracker:
 
         self.last_votes = (0, 0, 0, 0, 'NONE') # Start frest on every single frame
         flow_calculated = False
-        fist_mask = mask_roi > 0
+        fist_mask = mask_roi > 0 # Only care where user fist currently located, ignore the background
 
         # Unchained Math: Run it every time a fist is in the box
-        if np.sum(fist_mask) > 15:
+        if np.sum(fist_mask) > 15: # Calculate the total area in pixel of the moving object, ignore if less than 15 
             flow = cv.calcOpticalFlowFarneback(prev_gray_roi, curr_gray_roi, None, 0.5, 3, 15, 3, 5, 1.2, 0)
             dx = flow[..., 0]
             dy = flow[..., 1]
@@ -37,9 +37,11 @@ class OpticalFlowTracker:
         fist_dx = dx[fist_mask]
         fist_dy = dy[fist_mask]
 
-        up_votes = np.sum((fist_dy < -1.0) & (np.abs(fist_dy) > np.abs(fist_dx)))  
-        left_votes = np.sum((fist_dx < -1.0) & (np.abs(fist_dx) > np.abs(fist_dy)))   
-        right_votes = np.sum((fist_dx > 1.0) & (np.abs(fist_dx) > np.abs(fist_dy)))
+        # Calculate for every pixel in the frame, moving up = negative dy, left = negative dx, right = positive dx
+        # To find out which is the actual moving direction, since not everytime perfect punch, might be diagonal sometime
+        up_votes = np.sum((fist_dy < -1.0) & (np.abs(fist_dy) > np.abs(fist_dx)))   # Is the fist moving up && more vertical than horizontal?
+        left_votes = np.sum((fist_dx < -1.0) & (np.abs(fist_dx) > np.abs(fist_dy))) # Is the fist moving left && more horizontal than vertical?
+        right_votes = np.sum((fist_dx > 1.0) & (np.abs(fist_dx) > np.abs(fist_dy))) # Is the fist moving right && more horizontal than vertical?
 
         total_strong_pixels = up_votes + left_votes + right_votes
 
@@ -53,7 +55,9 @@ class OpticalFlowTracker:
         # Save the votes so debugger can read them
         self.last_votes = (up_votes, left_votes, right_votes, total_strong_pixels, dominant_dir)
 
-        if max_votes < (total_strong_pixels * 0.35):
+        # Multi-stage Heuristic filtering
+        # 35% check if it is a punch
+        if max_votes < (total_strong_pixels * 0.35): # If winning direction doesn't have at least 35% of the strong pixels, then it's not clear
             return False, "NO CLEAR DIRECTION!"
         if max_votes < 10: 
             return False, "STRAIGHT PUNCH!"
@@ -62,6 +66,7 @@ class OpticalFlowTracker:
         
         # Dominance Validation
         if req_dir == 'UP':
+            # 40% check if it is a clear hit for required target
             if (up_votes / max(total_strong_pixels, 1)) < 0.40:
                 return False, "NOT A VERTICAL PUNCH!"
             

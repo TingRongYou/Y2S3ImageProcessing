@@ -14,13 +14,13 @@ class Player:
         self.x_end = side_end
         self.health = config.MAX_HEALTH
         self.stamina = config.MAX_STAMINA
-        self.hud = PlayerHUD(name, is_left_side=(side_start ==0))
+        self.hud = PlayerHUD(name, is_left_side=(side_start==0))
         self.stats = {"hits": 0, "crits": 0, "misses": 0, "damage": 0, "overheats": 0, "energy": 0}
         self.overheated = False
         self.cooldown_end = 0
         self.colour_ui = colour_ui # (B, G, R) 
 
-        # Motion Tracking
+        # Motion Tracking   
         self.prev_box_motion = 0 # Set Motion History to 0
         self.last_hit_time = 0 # Ensure player can punch immediately (no cooldown on first punch)
 
@@ -30,11 +30,11 @@ class Player:
 
     def spawn_target(self, last_x=None, last_y=None):
         """Finds a random spot on THIS player's side"""
-        padding = 50 # Avoid spawming on the middle screen
+        padding = 50 # Avoid spawning on the middle screen
         attempts = 0
         directions = ['ANY', 'UP', 'LEFT', 'RIGHT']
         req_dir = random.choice(directions)
-        while attempts < 20:
+        while attempts < 20: # If after 20 time still too near, then just spawn it
             x = random.randint(self.x_start + padding, self.x_end - config.TARGET_SIZE - padding) # Ensure target spawn within player's side
             y = random.randint(80, config.HEIGHT - config.TARGET_SIZE - 50) 
             
@@ -52,7 +52,7 @@ class Player:
         # 1. Always track motion, even if overheated, moving still burns calories!
         # Mask is binary
         # Black(0) = No motion, White(255) = Motion
-        roi = mask [:, self.x_start:self.x_end] # Region of Interest (ROI) of player's side
+        roi = mask [:, self.x_start:self.x_end] # Region of Interest (ROI) of player's side (All rows of the screen but only the columns that belong to the player)
         total_motion = cv.countNonZero(roi) # Count white pixels in the mask (indicating motion)
         self.stats['energy'] += total_motion
 
@@ -113,23 +113,23 @@ class Player:
 
         tx, ty, tw, th, req_dir = self.target # location of the target
 
-        pad = 40
-        y1 = max(0, ty - pad)
+        pad = 40 # Player fast punch might be capture as "motion blur" by the webcam, add padding so it feels more forgiving
+        y1 = max(0, ty - pad) # To avoid accepting punches outside of the screen
         y2 = min(config.HEIGHT, ty + th + pad)
         x1 = max(0, tx - pad)
         x2 = min(config.WIDTH, tx + tw + pad)
 
-        roi = mask[y1:y2, x1:x2] # Region of Interest (ROI) of the target
+        roi = mask[y1:y2, x1:x2] # Region of Interest (ROI) of the target # If a pixel moved?
 
         # Calculate raw intensity of the punch!
-        vm_roi = visual_motion[y1:y2, x1:x2]
-        prev_roi = prev_gray[y1:y2, x1:x2]
+        vm_roi = visual_motion[y1:y2, x1:x2] # How hard is the punch
+        prev_roi = prev_gray[y1:y2, x1:x2] # Raw, unedited camera frames
         curr_roi = gray[y1:y2, x1:x2]
         avg_intensity = cv.mean(vm_roi)[0]
         _, max_intensity, _, _ = cv.minMaxLoc(vm_roi)
 
         box_motion = cv.countNonZero(roi) # Count white pixels in the target area
-        acceleration = box_motion - self.prev_box_motion # Calculate acceleration by deducting current frame with previous frame
+        acceleration = abs(box_motion - self.prev_box_motion) # Calculate acceleration by deducting current frame with previous frame
         self.prev_box_motion = box_motion 
 
         # Cooldown between hits
@@ -150,15 +150,15 @@ class Player:
                 return 0, error_msg, None
             
             # 3. If they survived the direction check, calculate the damage!
-            ys, xs = np.where(roi > 0)
+            ys, xs = np.where(roi > 0) # Find xy coordinate of all white pixels in the target area
             if len(xs) > 0:
-                hit_x = int(np.mean(xs)) + tx
+                hit_x = int(np.mean(xs)) + tx # Find centroid by calculating the mean
                 hit_y = int(np.mean(ys)) + ty
             else:
                 hit_x, hit_y = tx + tw//2, ty + th//2
 
-            distance = math.sqrt((hit_x - (tx + tw//2))**2 + (hit_y - (ty + th//2))**2)
-            accuracy_ratio = max(0, 1 - (distance / (tw // 2)))
+            distance = math.sqrt((hit_x - (tx + tw//2))**2 + (hit_y - (ty + th//2))**2) # Measure the distance in pixels between the player hit and target area center
+            accuracy_ratio = max(0, 1 - (distance / (tw // 2))) # Converts distance into percentage (0-1), if distance is 0, 100% accuracy, the further the hit is, the lower the ratio
 
             if accuracy_ratio > config.ACCURACY_PERFECT: accuracy_text = "PERFECT!"
             elif accuracy_ratio > config.ACCURACY_GOOD: accuracy_text = "GOOD"
