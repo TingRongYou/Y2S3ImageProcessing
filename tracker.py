@@ -16,9 +16,9 @@ class OpticalFlowTracker:
 
         # Unchained Math: Run it every time a fist is in the box
         if np.sum(fist_mask) > 15: # Calculate the total area in pixel of the moving object, ignore if less than 15 
-            flow = cv.calcOpticalFlowFarneback(prev_gray_roi, curr_gray_roi, None, 0.5, 3, 15, 3, 5, 1.2, 0)
-            dx = flow[..., 0]
-            dy = flow[..., 1]
+            flow = cv.calcOpticalFlowFarneback(prev_gray_roi, curr_gray_roi, None, 0.5, 3, 15, 3, 5, 1.2, 0) # The farneback algorithm looks for the pixel in prev_gray_roi and find where the same pixel moved to in curr_gray_roi, the calculate the differences
+            dx = flow[..., 0] # How many pixel move horizontally
+            dy = flow[..., 1] # How many pixel move vertically
             flow_calculated = True
         
             # Trigger the Debug Arrow
