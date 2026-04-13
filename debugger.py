@@ -107,3 +107,19 @@ class PerformanceDebugger:
         # Add Legend Labels
         cv.putText(main_frame, "HIGH MOTION", (35, leg_y + 10), cv.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
         cv.putText(main_frame, "STILL", (35, leg_y + 95), cv.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
+
+    def log_latency(self, frame_count, proc_time):
+        """Saves frame latency data for Objective 1 analysis"""
+        if not config.DEBUG_MODE: return
+        
+        latency_file = os.path.join(self.log_dir, "latency_results.csv")
+
+        # Write header if file doesn't exist
+        if not os.path.exists(latency_file):
+            with open(latency_file, mode='w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(["Frame", "Proc_Time"])
+        # Append data
+        with open(latency_file, mode='a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([frame_count, proc_time])

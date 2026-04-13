@@ -11,6 +11,7 @@ class SoundManager:
         
         # === 1. Load Sound Effects (SFX) ===
         # Loading MP3s as SFX is supported in newer Pygame versions
+        # Player / Basic SFX
         self.load_sfx("hit_p1",  "assets/sfx/hit_p1.mp3")  # Impact when P1 is hit
         self.load_sfx("hit_p2",  "assets/sfx/hit_p2.mp3")  # Impact when P2 is hit
         self.load_sfx("crit_p1", "assets/sfx/crit_p1.mp3") # Crit Impact on P1
@@ -19,6 +20,18 @@ class SoundManager:
         self.load_sfx("hurt_p2", "assets/sfx/hurt_p2.mp3") # P2 Grunt
         self.load_sfx("button",  "assets/sfx/button.mp3")  # Menu button hit
         self.load_sfx("screenshot", "assets/sfx/screenshot.mp3") # Screenshot sound
+
+        # Boss / Gameplay SFX
+        self.load_sfx("laser", "assets/sfx/laser.mp3")
+        self.load_sfx("laser_boss", "assets/sfx/laser_boss.mp3")
+
+        self.load_sfx("freeze", "assets/sfx/freeze.mp3")
+        self.load_sfx("scanner_boss", "assets/sfx/scanner_boss.mp3")
+
+        self.load_sfx("deflector", "assets/sfx/deflector.mp3")
+        self.load_sfx("deflector_boss", "assets/sfx/deflector_boss.mp3")
+        self.load_sfx("deflector_explode", "assets/sfx/deflector_explode.mp3")
+
         
         # === 2. Define Music Tracks ===
         self.menu_bgm = "assets/bgm/bgm_menu.mp3"
@@ -34,8 +47,15 @@ class SoundManager:
         """Loads a sound effect and stores it in the sfx dictionary"""
         if os.path.exists(path):
             try:
-                self.sfx[name] = pygame.mixer.Sound(path)
-                self.sfx[name].set_volume(0.5)
+                sound = pygame.mixer.Sound(path)
+                # Custom Volume Tuning
+                if name in ["deflector_explode"]:
+                    sound.set_volume(0.7) # Louder explosion
+                elif name in ["laser", "laser_boss"]:
+                    sound.set_volume(0.6)
+                else:
+                    sound.set_volume(0.5)
+                self.sfx[name] = sound
             except Exception as e:
                 print(f"Error Loading {name}: {e}")
         else:

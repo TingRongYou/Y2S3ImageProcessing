@@ -1,6 +1,8 @@
 import cv2 as cv
+import numpy as np
 import time
 import random
+import pygame
 import config
 from player import Player
 from ui import DamageText
@@ -197,7 +199,7 @@ class LaserBoss(BaseBoss):
             if current_time > self.action_timer:
                 self.state = "FIRE"
                 self.action_timer = current_time + 1.2
-                try: sound.play_sfx("crit_p1")
+                try: sound.play_sfx("laser")
                 except: pass
                 
         elif self.state == "FIRE":
@@ -207,7 +209,7 @@ class LaserBoss(BaseBoss):
                 x_start = self.zone * zone_w
                 zone_mask = mask[:, x_start:x_start + zone_w]
                 
-                if cv.countNonZero(zone_mask) > 100:
+                if cv.countNonZero(zone_mask) > 50:
                     player.health -= config.LASER_BOSS_DAMAGE
                     self.has_damaged = True
                     floating_texts.append(DamageText(f"-{config.LASER_BOSS_DAMAGE}", player.target[0], player.target[1], (0, 0, 255)))
@@ -227,17 +229,78 @@ class LaserBoss(BaseBoss):
         if self.state in ["WARN", "FIRE"]:
             zone_w = config.WIDTH // 3
             x_start = self.zone * zone_w
+            zone_center_x = x_start + (zone_w // 2)
 
+            # Warning Phase
             if self.state == "WARN":
-                cv.rectangle(heatmap, (x_start, 0), (x_start + zone_w, config.HEIGHT), (0, 165, 255), 4)
-                cv.putText(heatmap, "DANGER!", (x_start + 10, config.HEIGHT//2), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 165, 255), 3)
+                # Draw warning box
+                cv.rectangle(heatmap,
+                            (x_start, 0),
+                            (x_start + zone_w, config.HEIGHT),
+                            (0, 165, 255), 4)
 
+                # Text: DANGER 
+                text = "DANGER!"
+                (tw, th), _ = cv.getTextSize(text, cv.FONT_HERSHEY_SIMPLEX, 1.2, 3)
+
+                text_x = zone_center_x - tw // 2
+                text_y = config.HEIGHT // 2 - 20
+
+                # Shadow (important for readability)
+                cv.putText(heatmap, text,
+                        (text_x + 2, text_y + 2),
+                        cv.FONT_HERSHEY_SIMPLEX, 1.2,
+                        (0, 0, 0), 5)
+
+                # Main text
+                cv.putText(heatmap, text,
+                        (text_x, text_y),
+                        cv.FONT_HERSHEY_SIMPLEX, 1.2,
+                        (0, 165, 255), 3)
+
+            # Fire Phase
             elif self.state == "FIRE":
                 overlay = heatmap.copy()
-                cv.rectangle(overlay, (x_start, 0), (x_start + zone_w, config.HEIGHT), (0, 0, 255), -1)
-                cv.addWeighted(overlay, 0.5, heatmap, 0.5, 0, heatmap)
-                
-                cv.rectangle(heatmap, (x_start, 0), (x_start + zone_w, config.HEIGHT), (0, 0, 255), 8)
+
+                # Red danger fill
+                cv.rectangle(overlay,
+                            (x_start, 0),
+                            (x_start + zone_w, config.HEIGHT),
+                            (0, 0, 255), -1)
+
+                # Blend effect (slightly reduced for clarity)
+                cv.addWeighted(overlay, 0.35, heatmap, 0.65, 0, heatmap)
+
+                # Strong border
+                # Pulsing thickness , box breathes, player notices danger faster
+                if int(current_time * 5) % 2 == 0:
+                    thickness = 6
+                else:
+                    thickness = 2
+
+                cv.rectangle(heatmap,
+                            (x_start, 0),
+                            (x_start + zone_w, config.HEIGHT),
+                            (0, 0, 255), thickness)
+
+                # Text: DODGE!
+                dodge_text = "DODGE!"
+                (tw, th), _ = cv.getTextSize(dodge_text, cv.FONT_HERSHEY_SIMPLEX, 1.2, 3)
+
+                text_x = zone_center_x - tw // 2
+                text_y = config.HEIGHT // 2 - 20
+
+                # Shadow
+                cv.putText(heatmap, dodge_text,
+                        (text_x + 2, text_y + 2),
+                        cv.FONT_HERSHEY_SIMPLEX, 1.2,
+                        (0, 0, 0), 5)
+
+                # Main
+                cv.putText(heatmap, dodge_text,
+                        (text_x, text_y),
+                        cv.FONT_HERSHEY_SIMPLEX, 1.2,
+                        (255, 255, 255), 3)
             
 class ScannerBoss(BaseBoss):
     def __init__(self):
@@ -245,58 +308,124 @@ class ScannerBoss(BaseBoss):
         self.has_damaged = False
         self.first_run = True
         self.scan_start_time = 0 # Tracks when the freeze actually started
+        self.freeze_sound_played = False
+        self.scan_sound_played = False
         
-    def update(self, mask, player, current_time, sound, floating_texts):
+    def update(self, mask, player, current_time, sound, floating_texts, diff):
+
+        # First run delay
         if self.first_run:
             self.action_timer = current_time + config.BOSS_IDLE_TIME
             self.first_run = False
 
+        # From IDLE To SCAN
         if self.state == "IDLE":
             if current_time > self.action_timer:
+
                 self.state = "SCAN"
 
-                scan_duration = random.uniform(1.0, 10.0) # Random freez duration between 1 and 10 seconds
+                scan_duration = random.uniform(1.0, 10.0)
                 self.action_timer = current_time + scan_duration
 
                 self.scan_start_time = current_time
                 self.has_damaged = False
-                try: sound.play_sfx("button")
-                except: pass
+
+                # Reset sound flags
+                self.freeze_sound_played = False
+                self.scan_sound_played = False
+
+        # From SCAN To FREEZE
         elif self.state == "SCAN":
+
+            # Play freeze sound slightly later
+            if not self.freeze_sound_played and current_time > self.scan_start_time + 0.2:
+                sound.play_sfx("freeze")
+                self.freeze_sound_played = True
+
+            # End scan
             if current_time > self.action_timer:
                 self.state = "IDLE"
                 self.action_timer = current_time + config.BOSS_IDLE_TIME + 1.0
-            elif not self.has_damaged:
-                if current_time > self.scan_start_time + 0.6:
-                    motion = cv.countNonZero(mask)
-                    freeze_threshold = config.MISS_THRESHOLD * 1.2 # Increase freeze threshold
 
-                    if motion > freeze_threshold:
+            # Damage Logic
+            elif not self.has_damaged:
+
+                if current_time > self.scan_start_time + 0.6:
+
+                    # Motion Measurements
+                    motion_area = cv.countNonZero(mask)         # how big movement
+                    motion_strength = np.mean(diff)             # how strong movement
+
+                    # Thresholds
+                    area_threshold = config.MISS_THRESHOLD * 1.2
+
+                    # Decision Logic
+                    # HIGH DAMAGE → strong + large movement
+                    if motion_area > area_threshold and motion_strength > 20:
                         player.health -= 20
                         self.has_damaged = True
-                        try: sound.play_sfx("hurt_p1")
-                        except: pass
-                        floating_texts.append(DamageText("HIGH!", config.MID_X, 200, (0, 0, 255)))
-                    elif motion > freeze_threshold * 0.75:
+                        sound.play_sfx("hurt_p1")
+
+                        floating_texts.append(
+                            DamageText("HIGH!", config.MID_X, 200, (0, 0, 255))
+                        )
+
+                    # MEDIUM DAMAGE → moderate movement
+                    elif motion_area > area_threshold * 0.7 and motion_strength > 10:
                         player.health -= 10
                         self.has_damaged = True
-                        try: sound.play_sfx("hurt_p1")
-                        except: pass
-                        floating_texts.append(DamageText("WARNING!", config.MID_X, 200, (0, 255, 255)))
-                    elif motion > freeze_threshold * 0.4:
-                        floating_texts.append(DamageText("STAY STILL!", config.MID_X, 200, (255, 0, 0)))
+                        sound.play_sfx("hurt_p1")
+
+                        floating_texts.append(
+                            DamageText("WARNING!", config.MID_X, 200, (0, 255, 255))
+                        )
+
+                    # LOW WARNING → slight movement
+                    elif motion_strength > 5:
+                        floating_texts.append(
+                            DamageText("STAY STILL!", config.MID_X, 200, (255, 0, 0))
+                        )
 
     def draw_effects(self, heatmap, current_time):
+        center_x = config.WIDTH // 2
+
+        # IDLE to Show SCAN Countdown
         if self.state == "IDLE" and not self.first_run:
             time_left = max(0.0, self.action_timer - current_time)
-            cv.putText(heatmap, f"SCAN IN: {time_left:.1f}s", (config.MID_X - 120, 100), 
-                       cv.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
+
+            text = f"SCAN IN: {time_left:.1f}s"
+            (tw, th), _ = cv.getTextSize(text, cv.FONT_HERSHEY_SIMPLEX, 1, 2)
+
+            cv.putText(heatmap, text,
+                    (center_x - tw // 2, 80),
+                    cv.FONT_HERSHEY_SIMPLEX, 1,
+                    (255, 255, 255), 2)
+
+        # SCAN to FREEZE Phase
         elif self.state == "SCAN":
             overlay = heatmap.copy()
-            cv.rectangle(overlay, (0,0), (config.WIDTH, config.HEIGHT), (255, 255, 0), -1)
-            cv.addWeighted(overlay, 0.3, heatmap, 0.7, 0, heatmap)
-            cv.putText(heatmap, "FREEZE!", (config.MID_X - 100, 100), 
-                       cv.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 4)
+
+            # Yellow overlay
+            cv.rectangle(overlay, (0, 0), (config.WIDTH, config.HEIGHT), (0, 255, 255), -1)
+            cv.addWeighted(overlay, 0.25, heatmap, 0.75, 0, heatmap)
+
+            # FREEZE text
+            freeze_text = "FREEZE!"
+            (tw, th), _ = cv.getTextSize(freeze_text, cv.FONT_HERSHEY_SIMPLEX, 2, 4)
+
+            cv.putText(heatmap, freeze_text,
+                    (center_x - tw // 2, 120),
+                    cv.FONT_HERSHEY_SIMPLEX, 2,
+                    (0, 0, 255), 4)
+
+            # Instruction
+            instruction = "DON'T MOVE"
+            (tw2, th2), _ = cv.getTextSize(instruction, cv.FONT_HERSHEY_SIMPLEX, 1, 2)
+
+            cv.putText(heatmap, instruction,
+                    (center_x - tw2 // 2, 180),
+                    cv.FONT_HERSHEY_SIMPLEX, 1,
+                    (0, 255, 255), 2)
 
 class DeflectorBoss(BaseBoss):
     def __init__(self):
@@ -314,6 +443,7 @@ class DeflectorBoss(BaseBoss):
                 fx = random.randint(100, config.WIDTH - 100)
                 fy = random.randint(100, config.HEIGHT - 100)
                 self.fireball = [fx, fy, 40, current_time + config.DEFLECTOR_BOMB_TIME] # x, y, radius, expiration timer
+                sound.play_sfx("deflector")
         elif self.state == "ATTACK":
             if self.fireball:
                 fx, fy, fr, f_timer = self.fireball
@@ -334,14 +464,23 @@ class DeflectorBoss(BaseBoss):
                         floating_texts.append(DamageText("EXHAUSTED!", fx, fy-30, (128, 128, 128)))
                         floating_texts.append(DamageText(f"-{config.DEFLECTOR_BOSS_DAMAGE}", fx, fy, (0, 0, 255)))
                         self.fireball = None
+                        # Boss Heals
+                        self.health += 10
+                        self.health = min(self.health, config.DEFLECTOR_BOSS_HEALTH)
+                        floating_texts.append(DamageText("BOSS HEALS!", fx, fy - 30, (0, 0, 255)))
                         self.state = "IDLE"
                         self.action_timer = current_time + config.DEFLECTOR_FAIL_COOLDOWN
                 elif current_time > f_timer: # Fireball exploded
                     # Fail: Timer ran out
+                    sound.play_sfx("deflector_explode")
                     player.health -= config.DEFLECTOR_BOSS_DAMAGE
                     sound.play_sfx("hurt_p1")
                     floating_texts.append(DamageText(f"-{config.DEFLECTOR_BOSS_DAMAGE}", fx, fy, (0, 0, 255)))
                     self.fireball = None
+                    # Boss Heals
+                    self.health += 10
+                    self.health = min(self.health, config.DEFLECTOR_BOSS_HEALTH)
+                    floating_texts.append(DamageText("BOSS HEALS!", fx, fy - 30, (0, 0, 255)))
                     self.state = "IDLE"
                     self.action_timer = current_time + config.DEFLECTOR_FAIL_COOLDOWN
 
@@ -366,7 +505,16 @@ class SingleplayerMode:
             # Remove the previous boss from boss_classes pool
             boss_classes = [b for b in boss_classes if b.__name__ != previous_boss.__class__.__name__]
             
-        self.boss = random.choice(boss_classes)()
+        self.boss = random.choice(boss_classes)() # Selects the blueprints at random, then creates the boss object in memory
+
+        # Play boss intro sound
+        try: 
+            pygame.time.delay(200)
+            if isinstance(self.boss, LaserBoss): self.sound.play_sfx("laser_boss")
+            elif isinstance(self.boss, ScannerBoss): self.sound.play_sfx("scanner_boss")
+            elif isinstance(self.boss, DeflectorBoss): self.sound.play_sfx("deflector_boss")
+        except:
+            pass
         
         self.floating_texts = []
         self.p1_feedback = {"text": "", "color": (0,0,0), "time": 0}
@@ -405,7 +553,11 @@ class SingleplayerMode:
             self.boss.action_timer -= (0.01 * speed_factor)
 
         # 2. Boss Attacks Player (Using customized strategy logic)
-        self.boss.update(mask, self.p1, current_time, self.sound, self.floating_texts)
+        # ScannerBoss requires the raw visual_motion matrix to calculate hit strength
+        if isinstance(self.boss, ScannerBoss):
+            self.boss.update(mask, self.p1, current_time, self.sound, self.floating_texts, vision['visual_motion'])
+        else:
+            self.boss.update(mask, self.p1, current_time, self.sound, self.floating_texts)
 
     def draw(self, heatmap, current_time):
         self.p1.draw_ui(heatmap)

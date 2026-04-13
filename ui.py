@@ -1,5 +1,6 @@
 import cv2 as cv
 import time
+import random
 import config
 
 class Button:
@@ -29,6 +30,9 @@ class Button:
         text_x = x + (w - tw) // 2
         text_y = y + (h + th) // 2
         text_color = config.BUTTON_TEXT_COLOR if self.active else (150, 150, 150)
+        
+        # Shadow
+        cv.putText(frame, self.text, (text_x + 2, text_y + 2), font, scale, (0, 0, 0), thickness + 2)
         cv.putText(frame, self.text, (text_x, text_y), font, scale, text_color, thickness)
 
     def is_punched(self, mask):
@@ -66,8 +70,9 @@ class DamageText:
 
     def update(self):
         """Moves the text up slightly"""
-        # Move up by 3 pixels per frame
-        self.y -= 3
+        # Move up by 2 pixels per frame
+        self.y -= 2
+        self.x += random.randint(-1, 1)
 
     def is_expired(self):
         """Checks if the text should disappear"""
@@ -75,8 +80,13 @@ class DamageText:
     
     def draw(self, frame):
         """Draws the damage text on the screen"""
-        cv.putText(frame, self.text, (self.x, int(self.y)), 
-                   cv.FONT_HERSHEY_SIMPLEX, 1.5, self.color, 3)
+        x, y = int(self.x), int(self.y)
+
+        # Shadow
+        cv.putText(frame, self.text, (x + 2, y + 2), cv.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 0), 4)
+
+        # Main
+        cv.putText(frame, self.text, (x, y), cv.FONT_HERSHEY_SIMPLEX, 1.2, self.color, 2)
         
 class PlayerHUD:
     def __init__(self, name, is_left_side):
@@ -92,20 +102,30 @@ class PlayerHUD:
             cv.rectangle(frame, (50, 50), (50 + int(health * 3), 70), (0, 0, 255), -1)
             # Stamina Bar (Yellow)
             cv.rectangle(frame, (50, 80), (50 + int(stamina * 3), 90), (255, 255, 0), -1)
+
+            # Shadow then Main for Name
+            cv.putText(frame, self.name, (52, 32), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 3)
             cv.putText(frame, self.name, (50, 30), cv.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2)
             
             if overheated:
-                cv.putText(frame, "OVERHEAT!", (50, config.HEIGHT//2), cv.FONT_HERSHEY_SIMPLEX, 1.5, (0,0,255), 3)
+                x, y = 50, config.HEIGHT // 2
+                cv.putText(frame, "OVERHEAT!", (x + 2, y + 2), cv.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 0), 5)
+                cv.putText(frame, "OVERHEAT!", (x, y), cv.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 3)
 
         else:
             # Health Bar (Red)
             cv.rectangle(frame, (config.WIDTH - 50 - int(health * 3), 50), (config.WIDTH - 50, 70), (0, 0, 255), -1)
             # Stamina Bar (Yellow)
             cv.rectangle(frame, (config.WIDTH - 50 - int(stamina * 3), 80), (config.WIDTH - 50, 90), (255, 255, 0), -1)
+            
+            # Shadow then Main for Name
+            cv.putText(frame, self.name, (config.WIDTH - 198, 32), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 3)
             cv.putText(frame, self.name, (config.WIDTH - 200, 30), cv.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2)
             
             if overheated:
-                cv.putText(frame, "OVERHEAT!", (config.WIDTH - 300, config.HEIGHT//2), cv.FONT_HERSHEY_SIMPLEX, 1.5, (0,0,255), 3)
+                x, y = config.WIDTH - 300, config.HEIGHT // 2
+                cv.putText(frame, "OVERHEAT!", (x + 2, y + 2), cv.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 0), 5)
+                cv.putText(frame, "OVERHEAT!", (x, y), cv.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 3)
 
 class MainMenuScreen:
     def __init__(self):

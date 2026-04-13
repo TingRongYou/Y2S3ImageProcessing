@@ -1,0 +1,4 @@
+=== PSEUDOCOLOUR LUT VALIDATION ===
+
+Input (0) -> Output BGR: [128, 0, 0]
+Input (255) -> Output BGR: [0, 0, 128]

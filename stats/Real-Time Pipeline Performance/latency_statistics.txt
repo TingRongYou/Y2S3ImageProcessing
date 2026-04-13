@@ -1,0 +1,5 @@
+REAL-TIME PIPELINE PERFORMANCE
+
+Mean Latency: 6.64 ms
+Standard Deviation: 1.23
+99th Percentile: 10.00 ms
