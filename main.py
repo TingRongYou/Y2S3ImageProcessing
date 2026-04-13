@@ -51,6 +51,7 @@ if not ret: exit() # Safely shutdown program if webcam failed
 frame = cv.resize(frame, (config.WIDTH, config.HEIGHT)) 
 frame = cv.flip(frame, 1)
 prev_gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+frame_count = 0
 
 
 #== Main Loop ==#
@@ -71,6 +72,9 @@ while True:
     # Visualization Base
     visual_motion = cv.absdiff(gray, prev_gray) # Calculate diff between current and prev frame. If it hasn't change, then black (0), else higher num (closer to255) 
     heatmap = cv.applyColorMap(visual_motion * 5, cv.COLORMAP_JET) # Apply grayscal color to JET color, visual_motion * 5 to amplify weak differences
+
+    frame_count += 1
+    debugger.log_latency(frame_count, pipeline.last_proc_time)
 
     if config.WARMUP_FRAMES > 0:
         config.WARMUP_FRAMES -= 1 # 60 sec for the camera to adjust auto exposure and white balance, also to let players see the calibration screen and stand still to let MOG2 learn the background better, reducing false positives in the actual game

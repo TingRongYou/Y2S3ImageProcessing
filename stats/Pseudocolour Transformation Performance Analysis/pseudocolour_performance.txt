@@ -1,0 +1,4 @@
+=== PERFORMANCE COMPARISON ===
+
+Motion Extraction (absdiff): 0.900 ms
+Pseudocolour (applyColorMap): 2.298 ms

@@ -26,7 +26,7 @@ OVERHEAT_PENALTY = 3.0 # Freeze duration in seconds when overheated
 #== BOSS SETTINGS ==#
 BASE_BOSS_HEALTH = 300
 LASER_BOSS_HEALTH = 300 # Can directly overwrite specific boss health, easier to tweak individual bosses for balancing
-SCANNER_BOSS_HEALTH = 400
+SCANNER_BOSS_HEALTH = 300
 DEFLECTOR_BOSS_HEALTH = 500
 LASER_BOSS_DAMAGE = 15
 SCANNER_BOSS_DAMAGE = 20

@@ -1,0 +1,6 @@
+PSEUDOCOLOR MAPPING ANALYSIS
+
+Total Frames: 300
+Correlation (Motion vs Hue): -1.0000
+
+Strong inverse relationship (Correct mapping)
