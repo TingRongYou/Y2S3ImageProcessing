@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # OUTPUT FOLDER
 # =========================
 base_folder = "stats"
-output_folder = os.path.join(base_folder, "Pseudocolor Mapping Analysis")
+output_folder = os.path.join(base_folder, "Pseudocolour Mapping Analysis")
 
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
