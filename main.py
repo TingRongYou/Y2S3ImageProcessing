@@ -230,8 +230,11 @@ while True:
         # Fetch stats from the mode that just ended
         p1_stats, p2_stats = current_mode.get_stats()
 
+        # Check is single player mode
+        is_singleplayer = isinstance(current_mode, SingleplayerMode)
+
         # Draw Scorecard
-        game_over_screen.draw(heatmap, winner_text, p1_stats, p2_stats, is_locked) 
+        game_over_screen.draw(heatmap, winner_text, p1_stats, p2_stats, is_locked, is_singleplayer) 
 
         if not is_locked:
             # Check Button Inputs

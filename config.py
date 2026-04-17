@@ -24,10 +24,10 @@ STAMINA_RECOVERY = 2.0 # Stamina recovered per frame
 OVERHEAT_PENALTY = 3.0 # Freeze duration in seconds when overheated
 
 #== BOSS SETTINGS ==#
-BASE_BOSS_HEALTH = 300
-LASER_BOSS_HEALTH = 300 # Can directly overwrite specific boss health, easier to tweak individual bosses for balancing
-SCANNER_BOSS_HEALTH = 300
-DEFLECTOR_BOSS_HEALTH = 500
+BASE_BOSS_HEALTH = 50
+LASER_BOSS_HEALTH = 50 # Can directly overwrite specific boss health, easier to tweak individual bosses for balancing
+SCANNER_BOSS_HEALTH = 50
+DEFLECTOR_BOSS_HEALTH = 150
 LASER_BOSS_DAMAGE = 15
 SCANNER_BOSS_DAMAGE = 20
 DEFLECTOR_BOSS_DAMAGE = 15

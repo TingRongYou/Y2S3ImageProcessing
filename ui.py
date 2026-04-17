@@ -182,7 +182,7 @@ class GameOverScreen:
         self.btn_retry = Button("RETRY", center_x - 180, 500, 160, 60, active=True)
         self.btn_menu = Button("MAIN MENU", center_x + 20, 500, 160, 60, active=True)
     
-    def draw(self, frame, winner_text, p1_stats, p2_stats, is_locked=False):
+    def draw(self, frame, winner_text, p1_stats, p2_stats, is_locked=False, is_singleplayer=False):
         """Draws the game over screen with winner and stats. is_locked determines if buttons work"""
 
         # 1. Update button state
@@ -201,19 +201,31 @@ class GameOverScreen:
 
         # 4. Stats Columns
         # Column Headers
-        cv.putText(frame, "PLAYER 1", (150, 200), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
-        cv.putText(frame, "PLAYER 2", (550, 200), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 2)
+        if is_singleplayer:
+            # Single Player Layout (Centered)
+            cv.putText(frame, "PLAYER 1", (config.WIDTH//2 - 80, 200), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
+            
+            self._draw_single_stat_line(frame, "Hits",   p1_stats['hits'],   230)
+            self._draw_single_stat_line(frame, "Crits",  p1_stats['crits'],  270)
+            self._draw_single_stat_line(frame, "Misses", p1_stats['misses'], 310)
+            self._draw_single_stat_line(frame, "Damage", p1_stats['damage'], 350)
+            self._draw_single_stat_line(frame, "Overheats", p1_stats['overheats'], 390)
+            self._draw_single_stat_line(frame, "Motion", p1_stats['energy'], 430)
+            
+        else:
+            # Multiplayer Layout (Two Columns)
+            cv.putText(frame, "PLAYER 1", (150, 200), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
+            cv.putText(frame, "PLAYER 2", (550, 200), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 2)
 
-        # Draw Stats
-        self._draw_stat_line(frame, "Hits",   p1_stats['hits'],   p2_stats['hits'],   230)
-        self._draw_stat_line(frame, "Crits",  p1_stats['crits'],  p2_stats['crits'],  270)
-        self._draw_stat_line(frame, "Misses", p1_stats['misses'], p2_stats['misses'], 310)
-        self._draw_stat_line(frame, "Damage", p1_stats['damage'], p2_stats['damage'], 350)
-        self._draw_stat_line(frame, "Overheats",  p1_stats['overheats'], p2_stats['overheats'], 390)
+            self._draw_stat_line(frame, "Hits",   p1_stats['hits'],   p2_stats['hits'],   230)
+            self._draw_stat_line(frame, "Crits",  p1_stats['crits'],  p2_stats['crits'],  270)
+            self._draw_stat_line(frame, "Misses", p1_stats['misses'], p2_stats['misses'], 310)
+            self._draw_stat_line(frame, "Damage", p1_stats['damage'], p2_stats['damage'], 350)
+            self._draw_stat_line(frame, "Overheats",  p1_stats['overheats'], p2_stats['overheats'], 390)
 
-        e1 = f"{p1_stats['energy']}"
-        e2 = f"{p2_stats['energy']}"
-        self._draw_stat_line(frame, "Motion", e1, e2, 430)
+            e1 = f"{p1_stats['energy']}"
+            e2 = f"{p2_stats['energy']}"
+            self._draw_stat_line(frame, "Motion", e1, e2, 430)
 
         # 5. Draw Buttons
         self.btn_retry.rect = (config.WIDTH//2 - 180, 520, 160, 60) 
@@ -224,6 +236,24 @@ class GameOverScreen:
         # 6. Show "Loading" text if locked
         if is_locked:
             cv.putText(frame, "COOLDOWN...", (config.WIDTH//2 - 70, 490), cv.FONT_HERSHEY_SIMPLEX, 0.7, (100, 100, 100), 2)
+
+    def _draw_single_stat_line(self, frame, label, val1, y):
+        """Draws a row of stats perfectly centered for single player mode"""
+        font = cv.FONT_HERSHEY_SIMPLEX
+        scale = 0.8
+        thick = 2
+        color_text = (255, 255, 255)
+        color_label = (200, 200, 200)
+
+        # Draw Label (Offset slightly left of center)
+        (lw, lh), _ = cv.getTextSize(label, font, scale, thick)
+        label_x = (config.WIDTH // 2) - lw - 30
+        cv.putText(frame, label, (label_x, y), font, scale, color_label, thick)
+
+        # Draw Player 1 Value (Offset slightly right of center)
+        v1_str = str(val1)
+        v1_x = (config.WIDTH // 2) + 30
+        cv.putText(frame, v1_str, (v1_x, y), font, scale, color_text, thick)
 
     def _draw_stat_line(self, frame, label, val1, val2, y):
         """Draws a row of stats: Val1  Label  Val2"""
