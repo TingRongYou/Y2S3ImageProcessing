@@ -71,7 +71,7 @@ If you wish to run the game from the source code or modify the computer vision p
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/TingRongYou/Y2S3ImageProcessing.git](https://github.com/TingRongYou/Y2S3ImageProcessing.git)
+   git clone https://github.com/TingRongYou/Y2S3ImageProcessing.git
    cd Y2S3ImageProcessing
    ```
 2. Install the required dependencies:
