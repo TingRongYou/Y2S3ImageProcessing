@@ -43,6 +43,19 @@ A survival mode where Player 1 faces off against difficulty adaptive bosses. The
 
 ---
 
+## 🕹️ Translating Vision into Gameplay Mechanics
+How do raw pixels become a video game? We engineered specific algorithms to translate the computer vision tracking data directly into core game mechanics:
+
+* **Hit Detection & Accuracy Validation:** Instead of processing the entire screen at all times, the system isolates movement strictly within a dynamic Region of Interest (ROI) when a target appears. When a punch is detected, the game calculates the Euclidean distance between the center of your physical motion mass and the exact center of the target to determine your Accuracy percentage.
+* **Damage Scaling & Critical Hits:** Not all punches are equal. By tracking motion acceleration between consecutive frames, the system measures the sheer physical velocity of your movement. Standard punches register as Normal Hits, while explosive, high-intensity movements that break our predefined mathematical thresholds trigger massive Critical Hits with bonus damage.
+* **Directional Trajectory (Optical Flow):** To prevent players from "cheating" by just waving their hands wildly, the game uses Dense Optical Flow to compute exact motion vectors. A custom "pixel voting" mechanism analyzes the trajectory of your arm; if the dominant direction of the pixels (Up, Left, or Right) doesn't match the specific target's requirement, the hit is rejected.
+* **Stamina & Exhaustion Management:** The game continuously monitors the density of your motion mask. If you mindlessly "spam" punches without pacing yourself, your stamina bar depletes. If it empties entirely, your character enters an "Overheated" penalty state, rendering your attacks completely ineffective until you physically stop moving to catch your breath.
+* **Adaptive Boss Difficulty:** The system dynamically calculates a rolling average of your overall physical activity level. Based on your real-time exertion, the bosses will automatically adjust their movement speed and reaction timings. This ensures the workout remains challenging for highly active athletes while still being accessible for beginners.
+
+---
+
+---
+
 ## 🏆 Project Results & Objectives Achieved
 Based on our experimental analysis and system telemetry, the project successfully achieved its core objectives:
 1. **Hyper-Efficient Real-Time Tracking:** The dual-track pipeline achieved a mean latency of **2.51 ms** per frame, operating 13 times faster than the 33.3 ms requirement for 30 FPS, ensuring zero lag on standard hardware.
