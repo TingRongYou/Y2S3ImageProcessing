@@ -1,7 +1,7 @@
 # 🥊 Thermal Punch: Real-Time Motion Intensity Visualisation Using Pseudocolour Mapping
 
 ## Overview
-**Thermal Punch** is a hardware-agnostic, computer vision-based Exergame (Exercise + Gaming) that translates real-world physical movement into interactive digital inputs. Built entirely in Python for our Year 2 Semester 3 Image Processing module, the application provides a cost-effective, contactless fitness solution. 
+**Thermal Punch** is a hardware-agnostic, computer vision-based Exergame (Exercise + Gaming) that translates real-world physical movement into interactive digital inputs. Built entirely in Python for our Year 2 Semester 3 Image Processing course, the application provides a cost-effective, contactless fitness solution. 
 
 By utilizing a standard laptop webcam, the system calculates the intensity and velocity of a user's shadow-boxing movements in real-time, overlaying a dynamic "thermal" heatmap directly onto the video feed to provide immediate, gamified visual feedback on physical exertion.
 
@@ -26,20 +26,20 @@ Rather than relying on computationally heavy AI skeletal tracking or expensive V
 ## 🎮 Game Modes
 
 ### 👥 Multiplayer Mode
-A split-screen competitive mode where Player 1 (Left) and Player 2 (Right) face off. Players must physically punch directional targets that appear on their side of the screen. Damage is dynamically scaled based on the physical intensity (speed/energy) and accuracy of the punch.
+A split-screen competitive mode where Player 1 (Left) and Player 2 (Right) face off. Players must physically punch directional targets that appear on their side of the screen. Damage is dynamically scaled based on the physical intensity (speed/energy) and accuracy of the punch. Stamina bar is designed for both player to prevents from spamming motion on the hitboxes.
 
 ### 🤖 Singleplayer Boss Fights
-A survival mode where Player 1 faces off against adaptive AI bosses. The game dynamically adjusts its speed based on the player's overall motion output. Each boss requires a different physical strategy to defeat:
+A survival mode where Player 1 faces off against difficulty adaptive bosses. The game dynamically adjusts its speed based on the player's overall motion output. Each boss requires a different physical strategy to defeat:
 
 * 🔴 **MECHA-LASER**
   * **Ability:** Analyzes the screen to find the zone with the highest motion density and fires a devastating laser column.
   * **How to Beat:** Watch for the orange "DANGER!" warning box. You must physically move or lean out of that specific vertical zone before the laser fires to dodge the attack, then counter-attack.
 * 👁️ **THERMAL EYE (Scanner Boss)**
-  * **Ability:** Randomly initiates a system-wide yellow scan, culminating in a "FREEZE!" command. 
+  * **Ability:** Randomly initiates a system-wide scan, culminating in a "FREEZE!" command. 
   * **How to Beat:** When the screen flashes and instructs you not to move, you must hold completely still. The boss measures raw motion strength; slight twitches trigger warnings, but high movement will result in massive damage. 
 * 💣 **DEFLECTOR**
   * **Ability:** Spawns explosive thermal fireballs randomly across the screen with a ticking expiration timer.
-  * **How to Beat:** You must physically punch the fireball's location to deflect it back and damage the boss. However, if your stamina is overheated from swinging too wildly, you will be "EXHAUSTED" and take damage instead.
+  * **How to Beat:** You must physically punch the fireball's location to deflect it back to avoid explosion damage. However, if your stamina is overheated from swinging too wildly, you will be "EXHAUSTED" and take damage instead. To prevent spamming hit on deflector only, the deflector is designed to be able to heal the deflector boss.
 
 ---
 
