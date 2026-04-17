@@ -28,7 +28,7 @@ Rather than relying on computationally heavy AI skeletal tracking or expensive V
 ### 👥 Multiplayer Mode
 A split-screen competitive mode where Player 1 (Left) and Player 2 (Right) face off. Players must physically punch directional targets that appear on their side of the screen. Damage is dynamically scaled based on the physical intensity (speed/energy) and accuracy of the punch. Stamina bar is designed for both player to prevents from spamming motion on the hitboxes.
 
-### 🤖 Singleplayer Boss Fights
+### 🤖 Singleplayer Mode (Boss Fights)
 A survival mode where Player 1 faces off against difficulty adaptive bosses. The game dynamically adjusts its speed based on the player's overall motion output. Each boss requires a different physical strategy to defeat:
 
 * 🔴 **MECHA-LASER**
