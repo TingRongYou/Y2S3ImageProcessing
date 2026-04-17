@@ -6,5 +6,11 @@ __pycache__/
 *.mp4
 *.avi
 
-# Logs (Optional: prevents your local test runs from constantly needing to be committed)
+# Logs (Prevents local test runs from constantly needing to be committed)
 logs/*.csv
+screenshots/
+
+# PyInstaller Folders
+build/
+dist/
+*.spec
