@@ -78,15 +78,24 @@ class DamageText:
         """Checks if the text should disappear"""
         return (time.time() - self.start_time) > self.duration
     
-    def draw(self, frame):
-        """Draws the damage text on the screen"""
-        x, y = int(self.x), int(self.y)
+    def draw(self, heatmap):
+        # 1. Define your font settings
+        font = cv.FONT_HERSHEY_SIMPLEX
+        font_scale = 1
+        thickness = 2
 
-        # Shadow
-        cv.putText(frame, self.text, (x + 2, y + 2), cv.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 0), 4)
+        # 2. Calculate the exact pixel width of the text string
+        (text_width, _), _ = cv.getTextSize(self.text, font, font_scale, thickness)
+        
+        # 3. THE FIX: Find the center of the hitbox, THEN subtract half the text width!
+        target_center_x = int(self.x) + (config.TARGET_SIZE // 2)
+        centered_x = target_center_x - (text_width // 2)
 
-        # Main
-        cv.putText(frame, self.text, (x, y), cv.FONT_HERSHEY_SIMPLEX, 1.2, self.color, 2)
+        # 4. Add a black shadow for better readability
+        cv.putText(heatmap, self.text, (centered_x + 2, int(self.y) + 2), font, font_scale, (0, 0, 0), thickness + 1)
+        
+        # 5. Draw the actual centered text
+        cv.putText(heatmap, self.text, (centered_x, int(self.y)), font, font_scale, self.color, thickness)
         
 class PlayerHUD:
     def __init__(self, name, is_left_side):
@@ -196,8 +205,21 @@ class GameOverScreen:
         cv.addWeighted(overlay, 0.85, frame, 0.15, 0, frame)
 
         # 3. Winner Text
-        cv.putText(frame, winner_text, (config.WIDTH//2 - 250, 100), 
-                   cv.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 255), 4)
+        font = cv.FONT_HERSHEY_SIMPLEX
+        scale = 2
+        thickness = 4
+        
+        # Calculate the exact width of whatever the winner string is
+        (tw, _), _ = cv.getTextSize(winner_text, font, scale, thickness)
+        
+        # Find perfectly centered X coordinate based on the screen width
+        text_x = (config.WIDTH - tw) // 2
+        
+        # Draw a nice drop-shadow for readability
+        cv.putText(frame, winner_text, (text_x + 4, 100 + 4), font, scale, (0, 0, 0), thickness + 3)
+        
+        # Draw Main Text
+        cv.putText(frame, winner_text, (text_x, 100), font, scale, (0, 255, 255), thickness)
 
         # 4. Stats Columns
         # Column Headers

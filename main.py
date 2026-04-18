@@ -1,6 +1,8 @@
 import cv2 as cv
 import time
+import ctypes
 import os
+import sys
 import config
 from player import Player
 from ui import MainMenuScreen, CountdownDisplay, GameOverScreen, PauseScreen, Button
@@ -12,6 +14,34 @@ from debugger import PerformanceDebugger
 #== Initialization ==#
 fullscreen = False
 cv.namedWindow('Thermal Punch', cv.WINDOW_NORMAL) # Craate resizable window
+cv.waitKey(1) # GIVE WINDOWS 1 MILLISECOND TO ACTUALLY DRAW THE WINDOW
+
+# Force Custom Icon onto OpenCV Window
+try:
+    hwnd = ctypes.windll.user32.FindWindowW(None, 'Thermal Punch')
+    if hwnd:
+        WM_SETICON = 0x80
+        IMAGE_ICON = 1
+        LR_LOAD_AND_DEFAULT = 0x0050 
+        
+        # --- THE FIX IS HERE ---
+        if getattr(sys, 'frozen', False):
+            base_path = os.path.dirname(sys.executable)
+        else:
+            base_path = os.path.dirname(os.path.abspath(__file__))
+            
+        icon_path = os.path.join(base_path, "assets", "perfect_icon.ico")
+        # -----------------------
+        
+        if os.path.exists(icon_path):
+            hicon = ctypes.windll.user32.LoadImageW(0, icon_path, IMAGE_ICON, 0, 0, LR_LOAD_AND_DEFAULT)
+            
+            if hicon:
+                ctypes.windll.user32.SendMessageW(hwnd, WM_SETICON, 0, hicon)
+                ctypes.windll.user32.SendMessageW(hwnd, WM_SETICON, 1, hicon)
+except Exception:
+    pass
+
 cap = cv.VideoCapture(0) # Use primary webcam
 time.sleep(1) # Give time for camera to adjust auto exposure and white balance before start capturing frames
 

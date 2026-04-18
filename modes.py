@@ -46,10 +46,9 @@ class MultiplayerMode:
         if d1 > 0:
             self.p1.stats['hits'] += 1
             self.p1.stats['damage'] += d1
-            is_crit = False
-            if d1 >= 15:
+            is_crit = ("CRIT" in text1)
+            if is_crit:
                 self.p1.stats['crits'] += 1
-                is_crit = True
 
             self.sound.play_hit_combo(victim_id=2, is_crit=is_crit)
             self.set_feedback(1, text1, (0, 255, 255) if d1 < 10 else (0, 0, 255))
@@ -70,10 +69,9 @@ class MultiplayerMode:
         if d2 > 0:
             self.p2.stats['hits'] += 1
             self.p2.stats['damage'] += d2
-            is_crit = False
-            if d2 >= 15:
+            is_crit = ("CRIT" in text2)
+            if is_crit:
                 self.p2.stats['crits'] += 1
-                is_crit = True
 
             self.sound.play_hit_combo(victim_id=1, is_crit=is_crit)
             self.set_feedback(2, text2, (0, 255, 255) if d2 < 10 else (0, 0, 255))
@@ -102,12 +100,20 @@ class MultiplayerMode:
             if text_obj.is_expired():
                 self.floating_texts.remove(text_obj)
 
+        # Player 1 Feedback 
         if current_time < self.p1_feedback['time']:
-            cv.putText(heatmap, self.p1_feedback['text'], (self.p1.target[0], self.p1.target[1] - 20), cv.FONT_HERSHEY_SIMPLEX, 1.5, self.p1_feedback['color'], 3)
+            text = self.p1_feedback['text']
+            (tw, _), _ = cv.getTextSize(text, cv.FONT_HERSHEY_SIMPLEX, 1.5, 3)
+            tx = int(self.p1.target[0]) + (config.TARGET_SIZE // 2) - (tw // 2)
+            cv.putText(heatmap, text, (tx, self.p1.target[1] - 20), cv.FONT_HERSHEY_SIMPLEX, 1.5, self.p1_feedback['color'], 3)
 
+        # Player 2 Feedback 
         if current_time < self.p2_feedback['time']:
-            cv.putText(heatmap, self.p2_feedback['text'], (self.p2.target[0], self.p2.target[1] - 20), cv.FONT_HERSHEY_SIMPLEX, 1.5, self.p2_feedback['color'], 3)
-
+            text = self.p2_feedback['text']
+            (tw, _), _ = cv.getTextSize(text, cv.FONT_HERSHEY_SIMPLEX, 1.5, 3)
+            tx = int(self.p2.target[0]) + (config.TARGET_SIZE // 2) - (tw // 2)
+            cv.putText(heatmap, text, (tx, self.p2.target[1] - 20), cv.FONT_HERSHEY_SIMPLEX, 1.5, self.p2_feedback['color'], 3)
+            
         # Screen flash effects
         if self.flash_color and current_time < self.flash_end_time:
             overlay = heatmap.copy()
@@ -173,6 +179,10 @@ class BaseBoss:
 class LaserBoss(BaseBoss):
     def __init__(self):
         super().__init__("MECHA-LASER", (0, 165, 255))
+
+        self.health = config.LASER_BOSS_HEALTH
+        self.max_health = config.LASER_BOSS_HEALTH
+
         self.zone = 0
         self.has_damaged = False
 
@@ -209,7 +219,7 @@ class LaserBoss(BaseBoss):
                 x_start = self.zone * zone_w
                 zone_mask = mask[:, x_start:x_start + zone_w]
                 
-                if cv.countNonZero(zone_mask) > 50:
+                if cv.countNonZero(zone_mask) > config.MISS_THRESHOLD:
                     player.health -= config.LASER_BOSS_DAMAGE
                     self.has_damaged = True
                     floating_texts.append(DamageText(f"-{config.LASER_BOSS_DAMAGE}", player.target[0], player.target[1], (0, 0, 255)))
@@ -305,6 +315,10 @@ class LaserBoss(BaseBoss):
 class ScannerBoss(BaseBoss):
     def __init__(self):
         super().__init__("THERMAL EYE", (255, 255, 0)) # Cyan
+
+        self.health = config.SCANNER_BOSS_HEALTH
+        self.max_health = config.SCANNER_BOSS_HEALTH
+        
         self.has_damaged = False
         self.first_run = True
         self.scan_start_time = 0 # Tracks when the freeze actually started
@@ -396,8 +410,9 @@ class ScannerBoss(BaseBoss):
             text = f"SCAN IN: {time_left:.1f}s"
             (tw, th), _ = cv.getTextSize(text, cv.FONT_HERSHEY_SIMPLEX, 1, 2)
 
+            # MOVED DOWN: Changed Y from 80 to 200
             cv.putText(heatmap, text,
-                    (center_x - tw // 2, 80),
+                    (center_x - tw // 2, 200),
                     cv.FONT_HERSHEY_SIMPLEX, 1,
                     (255, 255, 255), 2)
 
@@ -413,8 +428,9 @@ class ScannerBoss(BaseBoss):
             freeze_text = "FREEZE!"
             (tw, th), _ = cv.getTextSize(freeze_text, cv.FONT_HERSHEY_SIMPLEX, 2, 4)
 
+            # MOVED DOWN: Changed Y from 120 to 300
             cv.putText(heatmap, freeze_text,
-                    (center_x - tw // 2, 120),
+                    (center_x - tw // 2, 300),
                     cv.FONT_HERSHEY_SIMPLEX, 2,
                     (0, 0, 255), 4)
 
@@ -422,8 +438,9 @@ class ScannerBoss(BaseBoss):
             instruction = "DON'T MOVE"
             (tw2, th2), _ = cv.getTextSize(instruction, cv.FONT_HERSHEY_SIMPLEX, 1, 2)
 
+            # MOVED DOWN: Changed Y from 180 to 360
             cv.putText(heatmap, instruction,
-                    (center_x - tw2 // 2, 180),
+                    (center_x - tw2 // 2, 360),
                     cv.FONT_HERSHEY_SIMPLEX, 1,
                     (0, 255, 255), 2)
 
@@ -450,13 +467,17 @@ class DeflectorBoss(BaseBoss):
                 roi = mask[max(0, fy-fr):fy+fr, max(0, fx-fr):fx+fr]
                 if cv.countNonZero(roi) > 150: # Player punched the fireball
                     if not player.overheated:
-                        # Success: Player has stamina and deflected it
+                        # Success (New Logic): Player has stamina and punched it, so the Boss heals!
                         self.fireball = None
+                        sound.play_sfx("hit_p2")
+                        
+                        # Boss Heals
+                        self.health += 1
+                        self.health = min(self.health, config.DEFLECTOR_BOSS_HEALTH)
+                        floating_texts.append(DamageText("BOSS HEALS!", fx, fy, (0, 255, 0)))
+                        
                         self.state = "IDLE"
                         self.action_timer = current_time + config.DEFLECTOR_SUCCESS_COOLDOWN
-                        sound.play_sfx("hit_p2")
-                        self.health -= 10 # Deflecting damages the boss!
-                        floating_texts.append(DamageText("DEFLECT!", fx, fy, (0, 255, 255)))
                     else:
                         # Fail: Player punched it but was overheated, explodes instantly
                         player.health -= config.DEFLECTOR_BOSS_DAMAGE
@@ -464,10 +485,7 @@ class DeflectorBoss(BaseBoss):
                         floating_texts.append(DamageText("EXHAUSTED!", fx, fy-30, (128, 128, 128)))
                         floating_texts.append(DamageText(f"-{config.DEFLECTOR_BOSS_DAMAGE}", fx, fy, (0, 0, 255)))
                         self.fireball = None
-                        # Boss Heals
-                        self.health += 10
-                        self.health = min(self.health, config.DEFLECTOR_BOSS_HEALTH)
-                        floating_texts.append(DamageText("BOSS HEALS!", fx, fy - 30, (0, 0, 255)))
+                        
                         self.state = "IDLE"
                         self.action_timer = current_time + config.DEFLECTOR_FAIL_COOLDOWN
                 elif current_time > f_timer: # Fireball exploded
@@ -475,12 +493,10 @@ class DeflectorBoss(BaseBoss):
                     sound.play_sfx("deflector_explode")
                     player.health -= config.DEFLECTOR_BOSS_DAMAGE
                     sound.play_sfx("hurt_p1")
+                    floating_texts.append(DamageText("EXPLODED!", fx, fy - 30, (0, 0, 255))) # Red text
                     floating_texts.append(DamageText(f"-{config.DEFLECTOR_BOSS_DAMAGE}", fx, fy, (0, 0, 255)))
                     self.fireball = None
-                    # Boss Heals
-                    self.health += 10
-                    self.health = min(self.health, config.DEFLECTOR_BOSS_HEALTH)
-                    floating_texts.append(DamageText("BOSS HEALS!", fx, fy - 30, (0, 0, 255)))
+                    
                     self.state = "IDLE"
                     self.action_timer = current_time + config.DEFLECTOR_FAIL_COOLDOWN
 
@@ -531,8 +547,9 @@ class SingleplayerMode:
         if d1 > 0:
             self.p1.stats['hits'] += 1
             self.p1.stats['damage'] += d1
-            is_crit = d1 >= 15
-            if is_crit: self.p1.stats['crits'] += 1
+            is_crit = ("CRIT" in text1)
+            if is_crit: 
+                self.p1.stats['crits'] += 1
             
             self.sound.play_hit_combo(victim_id=2, is_crit=is_crit) 
             self.set_feedback(text1, (0, 255, 255) if d1 < 10 else (0, 0, 255))
@@ -570,8 +587,12 @@ class SingleplayerMode:
             if text_obj.is_expired():
                 self.floating_texts.remove(text_obj)
                 
+        # Player 1 Feedback 
         if current_time < self.p1_feedback['time']:
-            cv.putText(heatmap, self.p1_feedback['text'], (self.p1.target[0], self.p1.target[1] - 20), cv.FONT_HERSHEY_SIMPLEX, 1.5, self.p1_feedback['color'], 3)
+            text = self.p1_feedback['text']
+            (tw, _), _ = cv.getTextSize(text, cv.FONT_HERSHEY_SIMPLEX, 1.5, 3)
+            tx = int(self.p1.target[0]) + (config.TARGET_SIZE // 2) - (tw // 2)
+            cv.putText(heatmap, text, (tx, self.p1.target[1] - 20), cv.FONT_HERSHEY_SIMPLEX, 1.5, self.p1_feedback['color'], 3)
 
     def draw_ui_only(self, heatmap):
         self.p1.draw_ui(heatmap)

@@ -1,3 +1,5 @@
+# Config file to store all game settings and costants for easy tweaking and balancing
+
 #== WINDOW ==#
 WIDTH, HEIGHT = 800, 600 # Basic resolution for window
 MID_X = WIDTH // 2 # Middle line to divide players
@@ -7,7 +9,7 @@ FEEDBACK_TEXT_DURATION = 2.0 # How long the text stays on screen
 WARMUP_FRAMES = 60 # Frames to skip when camera starts
 
 #== DEBUG MODE ==#
-DEBUG_MODE = True # Press 'd' in game to toggle
+DEBUG_MODE = False # Press 'd' in game to toggle
 
 #== GAME STATES ==#
 STATE_MENU = 0
@@ -24,10 +26,10 @@ STAMINA_RECOVERY = 2.0 # Stamina recovered per frame
 OVERHEAT_PENALTY = 3.0 # Freeze duration in seconds when overheated
 
 #== BOSS SETTINGS ==#
-BASE_BOSS_HEALTH = 50
+BASE_BOSS_HEALTH = 30
 LASER_BOSS_HEALTH = 50 # Can directly overwrite specific boss health, easier to tweak individual bosses for balancing
-SCANNER_BOSS_HEALTH = 50
-DEFLECTOR_BOSS_HEALTH = 150
+SCANNER_BOSS_HEALTH = 70
+DEFLECTOR_BOSS_HEALTH = 70
 LASER_BOSS_DAMAGE = 15
 SCANNER_BOSS_DAMAGE = 20
 DEFLECTOR_BOSS_DAMAGE = 15
@@ -41,8 +43,8 @@ DEFLECTOR_FAIL_COOLDOWN = 2.0 # Gives player time to recover after getting hits
 
 #== PUNCH SENSITIVITY ==#
 #Player 1 (Left)
-P1_CRIT_THRESHOLD = 2000   # Motion threshold for critical hit
-P1_NORMAL_THRESHOLD = 1100 # Motion threshold for normal hit
+P1_CRIT_THRESHOLD = 1800   # Motion threshold for critical hit
+P1_NORMAL_THRESHOLD = 1000 # Motion threshold for normal hit
 #Player 2 (Right) - P1 is easier to get crit sincd most webcam scan from top-left to bottom-righ, hence we give P2 slight advantages to balance the game
 P2_CRIT_THRESHOLD = 1500   # Motion threshold for critical hit
 P2_NORMAL_THRESHOLD = 600 # Motion threshold for normal hit
