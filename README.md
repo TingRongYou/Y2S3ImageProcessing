@@ -26,20 +26,20 @@ Rather than relying on computationally heavy AI skeletal tracking or expensive V
 ## 🎮 Game Modes
 
 ### 👥 Multiplayer Mode
-A split-screen competitive mode where Player 1 (Left) and Player 2 (Right) face off. Players must physically punch directional targets that appear on their side of the screen. Damage is dynamically scaled based on the physical intensity (speed/energy) and accuracy of the punch. Stamina bar is designed for both player to prevents from spamming motion on the hitboxes.
+A local split-screen competitive mode where Player 1 (Left) and Player 2 (Right) face off. Players must physically punch directional targets that appear on their side of the screen. Damage is dynamically scaled based on the physical intensity (speed/energy) and accuracy of the punch. Stamina bar is designed for both player to prevents from spamming motion on the hitboxes.
 
 ### 🤖 Singleplayer Mode (Boss Fights)
 A survival mode where Player 1 faces off against difficulty adaptive bosses. The game dynamically adjusts its speed based on the player's overall motion output. Each boss requires a different physical strategy to defeat:
 
 * 🔴 **MECHA-LASER**
   * **Ability:** Analyzes the screen to find the zone with the highest motion density and fires a devastating laser column.
-  * **How to Beat:** Watch for the orange "DANGER!" warning box. You must physically move or lean out of that specific vertical zone before the laser fires to dodge the attack, then counter-attack.
+  * **How to Beat:** Watch for the orange "DANGER!" warning box. You must physically move out of that specific vertical zone before the laser fires to dodge the attack, then counter-attack.
 * 👁️ **THERMAL EYE (Scanner Boss)**
   * **Ability:** Randomly initiates a system-wide scan, culminating in a "FREEZE!" command. 
-  * **How to Beat:** When the screen flashes and instructs you not to move, you must hold completely still. The boss measures raw motion strength; slight twitches trigger warnings, but high movement will result in massive damage. 
+  * **How to Beat:** When the screen "FREEZE" and turns into cyan colour, you must hold completely still. The boss measures raw motion strength; slight twitches trigger warnings, but high movement will result in massive damage. 
 * 💣 **DEFLECTOR**
   * **Ability:** Spawns explosive thermal fireballs randomly across the screen with a ticking expiration timer.
-  * **How to Beat:** You must physically punch the fireball's location to deflect it back to avoid explosion damage. However, if your stamina is overheated from swinging too wildly, you will be "EXHAUSTED" and take damage instead. To prevent spamming hit on deflector only, the deflector is designed to be able to heal the deflector boss.
+  * **How to Beat:** You must physically punch the fireball's location to deflect it back to avoid explosion damage. However, to prevent spamming hit on fireball only, the fireball is designed to be able to heal the deflector boss.
 
 ---
 
