@@ -73,9 +73,9 @@ The game is completely controllable via keyboard shortcuts. While the main menu 
 
 ## 🏆 Project Results & Objectives Achieved
 Based on our experimental analysis and system telemetry, the project successfully achieved its core objectives:
-1. **Hyper-Efficient Real-Time Tracking:** The dual-track pipeline achieved a mean latency of **2.51 ms** per frame, operating 13 times faster than the 33.3 ms requirement for 30 FPS, ensuring zero lag on standard hardware.
-2. **Accurate Visual Feedback:** Achieved a perfect negative correlation ($r = -1.0$) between motion intensity and Hue values, validating that the JET pseudocolour mapping is strictly monotonic and mathematically accurate.
-3. **Gamified Physical Exertion:** Telemetry from 773 registered interactions proved the system successfully filtered ambient room noise (threshold 25) while demanding a high average physical exertion (intensity 114.97) from the player, proving its viability as a fitness application.
+1. **Real-Time Tracking:** Achieved a mean latency of **2.51 ms** per frame, operating **13 times faster** than the 33.3 ms requirement for **30 FPS**, ensuring zero lag on standard hardware.
+2. **Accurate visual Feedback (Pseudocolour):** Achieved a perfect negative correlation ($r = -1.0$) between motion intensity and Hue values, validating that the JET pseudocolour mapping is mathematically accurate.
+3. **Gamified Physical Exertion (Motion Intensity):** 773 registered interactions proved the system successfully filtered ambient room noise (threshold 25) while demanding a high average physical exertion (intensity 114.97) from the player, proving its viability as a fitness application.
 
 ---
 
@@ -120,8 +120,8 @@ Simply open the **`config.py`** file in your IDE to modify these key settings:
   * `MISS_THRESHOLD`: Adjusts how much ambient movement is ignored. Increase this if a noisy room is causing false punches.
   * `ADAPTIVE_HIGH_MOTION` / `ADAPTIVE_SPEED_FAST`: Controls the physical threshold required to trigger the "Fast" boss speed. 
 * **Boss Difficulty Balancing:**
-  * `BASE_BOSS_HEALTH` / `DEFLECTOR_BOSS_HEALTH`: Increase or decrease the HP pools of the AI bosses.
-  * `LASER_BOSS_DAMAGE` / `DEFLECTOR_BOSS_DAMAGE`: Adjust how punishing the boss attacks are when you fail to dodge or deflect.
+  * `BASE_BOSS_HEALTH` / `DEFLECTOR_BOSS_HEALTH / ...`: Increase or decrease the heatlh (HP) of singleplayer bosses.
+  * `LASER_BOSS_DAMAGE` / `DEFLECTOR_BOSS_DAMAGE / ...`: Adjust the damage of the singleplayer bosses.
 * **UI & Timers:**
   * `FEEDBACK_TEXT_DURATION`: Controls how many seconds the floating "CRITICAL!" or "MISS!" text stays on screen.
   * `BOSS_IDLE_TIME`: Adjusts the resting period between boss attacks. Lowering this makes the game significantly more exhausting!
