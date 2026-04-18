@@ -54,6 +54,21 @@ How do raw pixels become a video game? We engineered specific algorithms to tran
 
 ---
 
+## ⌨️ Keybindings & Controls
+The game is completely controllable via keyboard shortcuts. While the main menu and game-over screens support physical "punch-to-click" motion interaction, you can always use these global hotkeys at any time:
+
+* **[1]** - Start Singleplayer Mode (1P)
+* **[2]** - Start Multiplayer Mode (2P)
+* **[M]** - Return to Main Menu
+* **[R]** - Retry / Restart current match
+* **[P]** - Pause / Unpause Game
+* **[Q]** - Quit Application
+* **[F]** - Toggle Fullscreen Mode
+* **[H]** - Toggle Heatmap (Switches between raw webcam feed and the JET pseudocolour heatmap)
+* **[D]** - Toggle Debugger Mode (Opens a developer window showing the raw MOG2 masks, optical flow vectors, and frame-differencing data)
+* **[C]** - Calibrate (Instantly resets the MOG2 background subtractor if lighting changes)
+* **[S]** - Take Screenshot (Saves a high-resolution snapshot to the `/screenshots/` folder)
+
 ---
 
 ## 🏆 Project Results & Objectives Achieved
@@ -95,6 +110,23 @@ If you wish to run the game from the source code or modify the computer vision p
    ```bash
    python main.py
    ```
+
+### Configuration & Game Tuning (`config.py`)
+The game engine is designed to be highly modular. If you are running the game from the source code, you can easily tweak the difficulty, sensitivity, and visuals without hunting through the core logic. 
+
+Simply open the **`config.py`** file in your IDE to modify these key settings:
+
+* **Motion Sensitivity & Thresholds:**
+  * `MISS_THRESHOLD`: Adjusts how much ambient movement is ignored. Increase this if a noisy room is causing false punches.
+  * `ADAPTIVE_HIGH_MOTION` / `ADAPTIVE_SPEED_FAST`: Controls the physical threshold required to trigger the "Fast" boss speed. 
+* **Boss Difficulty Balancing:**
+  * `BASE_BOSS_HEALTH` / `DEFLECTOR_BOSS_HEALTH`: Increase or decrease the HP pools of the AI bosses.
+  * `LASER_BOSS_DAMAGE` / `DEFLECTOR_BOSS_DAMAGE`: Adjust how punishing the boss attacks are when you fail to dodge or deflect.
+* **UI & Timers:**
+  * `FEEDBACK_TEXT_DURATION`: Controls how many seconds the floating "CRITICAL!" or "MISS!" text stays on screen.
+  * `BOSS_IDLE_TIME`: Adjusts the resting period between boss attacks. Lowering this makes the game significantly more exhausting!
+* **Resolution:**
+  * `WIDTH` and `HEIGHT`: Native window resolution (Default is `1280x720`).
 
 ---
 
