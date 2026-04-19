@@ -91,12 +91,13 @@ You do not need to install Python or any code dependencies to play the game! We 
 
 ## 🛠️ For Developers (Source Code)
 If you wish to run the game from the source code or modify the computer vision pipeline:
+_(Note: The source code was written and tested using Visual Studio Code)_
 
 ### Prerequisites
 * Python 3.8+
 * A working webcam
 
-### Installation
+### 1. Installation using github
 1. Clone the repository:
    ```bash
    git clone https://github.com/TingRongYou/Y2S3ImageProcessing.git
@@ -107,6 +108,24 @@ If you wish to run the game from the source code or modify the computer vision p
    pip install opencv-python numpy pygame
    ```
 3. Run the Application:
+   ```bash
+   python main.py
+   ```
+
+### 2. Installation using `.zip` for source code file 
+If you are downloading the source code directly from Google Classroom:
+
+1. **Extract the Folder:** Download the `.zip` file and extract it completely to your local machine (e.g., your Desktop). _Note: The application will crash if you attempt to run it while it is still inside the compressed `.zip` preview._
+2. **Open your Workspace:** Open the extracted folder in your preferred IDE:
+   * _Tip: If using Visual Studio Code, it is highly recommend to install the official **Python extension** by Microsoft for the best experience._
+3. **Create a Virtual Environment (Recommended):** To avoid conflicting with other projects on your system, open your terminal inside the project folder and create a fresh environment:
+   * **Windows:** `python -m venv venv` followed by `venv\Scripts\activate`
+   * **macOS/Linux:** `python3 -m venv venv` followed by `source venv/bin/activate`
+4. **Install Dependencies:** With your terminal (and virtual environment) active, install the required libraries:
+   ```bash
+   pip install opencv-python numpy pygame
+   ```
+5. **Run the Application:** Ensure your webcam is connected and unblocked, then execute the main script:
    ```bash
    python main.py
    ```
