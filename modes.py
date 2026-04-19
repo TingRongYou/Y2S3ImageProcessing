@@ -368,10 +368,14 @@ class ScannerBoss(BaseBoss):
 
                     # Motion Measurements
                     motion_area = cv.countNonZero(mask)         # how big movement
-                    motion_strength = np.mean(diff)             # how strong movement
+
+                    if motion_area > 0:                         # how strong movement
+                        motion_strength = np.mean(diff[mask > 0])
+                    else:
+                        motion_strength = 0             
 
                     # Thresholds
-                    area_threshold = config.MISS_THRESHOLD * 1.2
+                    area_threshold = config.MISS_THRESHOLD * 0.5
 
                     # Decision Logic
                     # HIGH DAMAGE → strong + large movement
@@ -383,15 +387,21 @@ class ScannerBoss(BaseBoss):
                         floating_texts.append(
                             DamageText("HIGH!", config.MID_X, 200, (0, 0, 255))
                         )
+                        floating_texts.append(
+                            DamageText("-20", config.MID_X, 240, (0, 0, 255)) 
+                        )
 
                     # MEDIUM DAMAGE → moderate movement
-                    elif motion_area > area_threshold * 0.7 and motion_strength > 10:
+                    elif motion_area > area_threshold * 0.3 and motion_strength > 10:
                         player.health -= 10
                         self.has_damaged = True
                         sound.play_sfx("hurt_p1")
 
                         floating_texts.append(
                             DamageText("WARNING!", config.MID_X, 200, (0, 255, 255))
+                        )
+                        floating_texts.append(
+                            DamageText("-10", config.MID_X, 240, (0, 255, 255))
                         )
 
                     # LOW WARNING → slight movement
@@ -428,7 +438,6 @@ class ScannerBoss(BaseBoss):
             freeze_text = "FREEZE!"
             (tw, th), _ = cv.getTextSize(freeze_text, cv.FONT_HERSHEY_SIMPLEX, 2, 4)
 
-            # MOVED DOWN: Changed Y from 120 to 300
             cv.putText(heatmap, freeze_text,
                     (center_x - tw // 2, 300),
                     cv.FONT_HERSHEY_SIMPLEX, 2,
@@ -438,7 +447,6 @@ class ScannerBoss(BaseBoss):
             instruction = "DON'T MOVE"
             (tw2, th2), _ = cv.getTextSize(instruction, cv.FONT_HERSHEY_SIMPLEX, 1, 2)
 
-            # MOVED DOWN: Changed Y from 180 to 360
             cv.putText(heatmap, instruction,
                     (center_x - tw2 // 2, 360),
                     cv.FONT_HERSHEY_SIMPLEX, 1,
