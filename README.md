@@ -83,7 +83,7 @@ Based on our experimental analysis and system telemetry, the project successfull
 You do not need to install Python or any code dependencies to play the game! We have compiled the entire project into a standalone, ready-to-play executable.
 
 1. Navigate to the **[Releases](../../releases)** section on the right side of this GitHub page.
-2. Download the `Thermal Punch v1.0.zip` file.
+2. Download the `Thermal Punch v1.1.zip` file.
 3. Extract the folder to your Desktop.
 4. Double-click **`Thermal Punch.exe`** (look for the blue boxing glove icon) to start playing!
 
